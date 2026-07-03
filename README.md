@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# party-wall
 
-## Getting Started
+A live party photo wall + auto-generated memory timeline. Portable and reusable for any event.
 
-First, run the development server:
+- **Guests scan a QR code** → upload photos from their phones (no app installs)
+- **Photos appear live on the TV** slideshow with confetti when new ones land
+- **A memory timeline builds itself** from the same photos, grouped by month — e.g. "Her Year in Three" for a 3rd birthday
+
+## Quick start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 — the home page shows the QR code guests scan. Put `/wall` on the TV (laptop + HDMI or cast) and hand out the QR.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Make it yours
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All personalization lives in one file: [`party.config.ts`](party.config.ts)
 
-## Learn More
+```ts
+honoree: "Nora",
+age: 3,
+eventTitle: "Happy 3rd Birthday Nora!",
+timelineTitle: "Nora's Year in Three",
+theme: { primary: "#f472b6", secondary: "#fbbf24", ... },
+```
 
-To learn more about Next.js, take a look at the following resources:
+Change the config, restart — new event. Works for birthdays, holidays, reunions, anything.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Pages
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Route | Purpose |
+| --- | --- |
+| `/` | Host home — QR code + links |
+| `/upload` | Phone-first guest upload (photo, caption, name, memory month) |
+| `/wall` | Fullscreen TV slideshow, polls for new photos, celebrates arrivals |
+| `/timeline` | Auto-generated memory timeline grouped by month |
 
-## Deploy on Vercel
+## Storage
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Photos and metadata are stored on the local filesystem (`data/` by default, override with `PARTY_WALL_DATA_DIR`). No database, no cloud dependencies — run it on a laptop on your home wifi and everything stays in your house. The `data/` folder afterward *is* your keepsake album.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notes
+
+- Guests must be on the same network as the host (home wifi) or the app must be deployed somewhere reachable.
+- For deployment on serverless platforms you'd want to swap the filesystem store (`src/lib/store.ts`) for blob storage — the store module is the only thing to change.
