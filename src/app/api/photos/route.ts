@@ -8,7 +8,6 @@ const ALLOWED_TYPES: Record<string, string> = {
   "image/png": ".png",
   "image/webp": ".webp",
   "image/gif": ".gif",
-  "image/heic": ".heic",
 };
 
 const MAX_SIZE = 15 * 1024 * 1024;

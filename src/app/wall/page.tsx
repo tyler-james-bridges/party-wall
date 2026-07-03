@@ -35,11 +35,12 @@ export default function WallPage() {
 
   useEffect(() => {
     const id = setInterval(() => {
-      const fresh = newQueue.current.shift();
       setPhotos((prev) => {
+        const fresh = newQueue.current[0];
         if (fresh) {
           const idx = prev.findIndex((p) => p.id === fresh.id);
           if (idx >= 0) {
+            newQueue.current.shift();
             setCurrent(idx);
             setCelebrate(true);
             setTimeout(() => setCelebrate(false), 4000);

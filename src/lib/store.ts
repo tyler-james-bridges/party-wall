@@ -20,6 +20,14 @@ async function ensureDirs() {
   await fs.mkdir(PHOTOS_DIR, { recursive: true });
 }
 
+let indexLock: Promise<unknown> = Promise.resolve();
+
+function withIndexLock<T>(fn: () => Promise<T>): Promise<T> {
+  const run = indexLock.then(fn, fn);
+  indexLock = run.catch(() => undefined);
+  return run;
+}
+
 export async function listPhotos(): Promise<Photo[]> {
   try {
     const raw = await fs.readFile(INDEX_FILE, "utf8");
@@ -48,9 +56,11 @@ export async function addPhoto(input: {
     memoryMonth: input.memoryMonth,
     createdAt: new Date().toISOString(),
   };
-  const photos = await listPhotos();
-  photos.push(photo);
-  await fs.writeFile(INDEX_FILE, JSON.stringify(photos, null, 2));
+  await withIndexLock(async () => {
+    const photos = await listPhotos();
+    photos.push(photo);
+    await fs.writeFile(INDEX_FILE, JSON.stringify(photos, null, 2));
+  });
   return photo;
 }
 

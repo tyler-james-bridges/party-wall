@@ -15,7 +15,10 @@ export default function UploadPage() {
   function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setPreview(URL.createObjectURL(file));
+    setPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
     setStatus("idle");
   }
 
@@ -35,7 +38,10 @@ export default function UploadPage() {
       return;
     }
     setStatus("done");
-    setPreview(null);
+    setPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
     setCaption("");
     if (fileRef.current) fileRef.current.value = "";
   }
